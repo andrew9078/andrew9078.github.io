@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, useTransition, animated } from 'react-spring';
 import emailjs from 'emailjs-com';
 import Loadingscreen from './loadingscreen';
 import './App.css';
@@ -7,24 +7,43 @@ import './App.css';
 function App() {
 
   const [isLoading, setIsLoading] = useState(true);
+  const [listVisible, setListVisible] = useState(false);
   const [showClickMe, setShowClickMe] = useState(false);
-  const [circleClicked, setCircleClicked] = useState(false);
   const [selectedSection, setSelectedSection] = useState('');
-  const [circleVisible, setCircleVisible] = useState(false);
   const handleLoadingFinish = () => {
     setIsLoading(false);
     setTimeout(() => {setShowClickMe(true);
     }, 1000);
   };//HandleLoadingfinish
 
+  const handleClickMe = () => {
+    setMenuVisible(true);
+  };
 
   const fadeProps = useSpring({
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    to: {opacity: showClickMe ? 1 : 0, transform: 'translateY(0)' },
-    config: { tension: 220, friction: 10 },
+    opacity: !listVisible ? 1 : 0,
+    config: { duration: 1000 },
   });
 
-  const handleMenuClick = (section) => setSelectedSection(section);//Handling Menu click
+  const slideProps = useSpring({
+    opacity: listVisible ? 1 : 0,
+    transform: listVisible ? 'translateY(0)' : 'translateY(-20px)',
+    config: { duration: 1500 },
+  });
+  
+  const menuItems = ['About Me', 'Experience', 'Contact Me'];
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const handleMenuClick = (section) => { 
+    setSelectedSection(section);//Handling Menu click
+  }
+
+  const transitions = useTransition(menuVisible ? menuItems : [], {
+    from: { opacity: 0, transform: 'translat3d(100%, 0, 0)' },
+    enter: { opacity: 1, transform: 'translat3d(0%, 0, 0)' },
+    leave: { opacity: 0, transform: 'translate3d(-50%, 0, 0)' },
+    config: {duration: 1000 },
+  });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -54,22 +73,37 @@ function App() {
       setFormData({ name: '', email: '', message: ''});
   };//handlesubmit
 
-  const circleProps = useSpring({
-    from: { scale: 0 },
-    to: { scale: circleClicked ? (circleVisible ? 1 : 0) : 0 },
-    config: {tension: 220, friction: 10 },
-  });
   
   return (
     <div className="App">
       {isLoading ? (
-        <Loadingscreen onFinish={handleLoadingFinish} />
+        <Loadingscreen onFinish={() => setIsLoading(false)}  />
       ) : (
         <div className="black-screen">
           {/*showing animated circle after initial message*/}
-          <animated.div style={fadeProps} className="click-me" onClick={() => console.log('Clicked!')}>
-            Click me
-          </animated.div>
+          {!menuVisible && (
+            <animated.div style={fadeProps} className="click-me" onClick={handleClickMe}>
+              Click Me
+            </animated.div>
+          )}
+
+          {/* Animated List options */}
+        {menuVisible && (
+          <ul className="menu-list">
+            {transitions((style, item) => (
+              <animated.li key={item} style={style} onClick={() => handleMenuClick(item)}>
+                {item}
+              </animated.li>
+            ))}
+           </ul>
+          )}
+
+          {selectedSection === 'about' && <div>About Me Section</div>}
+          {selectedSection === 'experience' && <div>Experience Section</div>}
+          {selectedSection === 'contact' && <div>Contact Me Section</div>}
+
+
+          
 
           {/*}
           <nav>

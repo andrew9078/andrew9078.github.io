@@ -58,6 +58,20 @@ html, body{
   margin: 20px 0;
 }
 
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px;
+  color: white;
+  text-align: center;
+}
+
+.menu-list li {
+  margin: 10px 0;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
 .menu ul li button:hover{
   color: #00bfff;
 }
