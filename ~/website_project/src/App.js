@@ -1,21 +1,36 @@
 import React, { useState } from 'react';
+import { useSpring, animated } from 'react-spring';
 import emailjs from 'emailjs-com';
 import Loadingscreen from './loadingscreen';
 import './App.css';
 
 function App() {
 
-  const [isLoading, setIsLoading] = useState(true)
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [showClickMe, setShowClickMe] = useState(false);
+  const [circleClicked, setCircleClicked] = useState(false);
+  const [selectedSection, setSelectedSection] = useState('');
+  const [circleVisible, setCircleVisible] = useState(false);
   const handleLoadingFinish = () => {
     setIsLoading(false);
-  };
+    setTimeout(() => {setShowClickMe(true);
+    }, 1000);
+  };//HandleLoadingfinish
+
+
+  const fadeProps = useSpring({
+    from: { opacity: 0, transform: 'translateY(20px)' },
+    to: {opacity: showClickMe ? 1 : 0, transform: 'translateY(0)' },
+    config: { tension: 220, friction: 10 },
+  });
+
+  const handleMenuClick = (section) => setSelectedSection(section);//Handling Menu click
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
-  });
+  });//FormData
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,84 +54,95 @@ function App() {
       setFormData({ name: '', email: '', message: ''});
   };//handlesubmit
 
-
+  const circleProps = useSpring({
+    from: { scale: 0 },
+    to: { scale: circleClicked ? (circleVisible ? 1 : 0) : 0 },
+    config: {tension: 220, friction: 10 },
+  });
+  
   return (
     <div className="App">
       {isLoading ? (
         <Loadingscreen onFinish={handleLoadingFinish} />
       ) : (
-        <div>
-        <header>
+        <div className="black-screen">
+          {/*showing animated circle after initial message*/}
+          <animated.div style={fadeProps} className="click-me" onClick={() => console.log('Clicked!')}>
+            Click me
+          </animated.div>
+
+          {/*}
           <nav>
             <h1>Andrew Jung</h1>
             <u1>
-              <li><a href="#about">About</a></li>
-              <li><a href="#projects">Projects</a></li>
-              <li><a href="#contact">Contact</a></li>
-
+              <li><button onClick={() => handleMenuClick('about')} >About Me</button></li>
+              <li><button onClick={() => handleMenuClick('experience')} >Experience</button></li>
+              <li><button onClick={() => handleMenuClick('contact')} >Contact me</button></li>
             </u1>
           </nav>
-        </header>
 
-        <section id="her" classname="hero-section">
-          <h2>Hi I'm Andrew Jung</h2>
-          <p>Aspiring Software Engineer | Creative Thinker</p>
-          <a href="projects" classname="cta-button">View Projects</a>
-        </section>
+          {/* Conditional Rendering based on selecting a section */}
+          {/*}
+          {selectedSection === 'about' && (
+            <section id="about">
+              <h2>About Me</h2>
+              <p>This is the About me section</p>
+            </section>
+          )}
 
-        <section id="projects">
-          <h2>Projects</h2>
-          <div className="project-list">
-            <div className="project">
-              <h3>Project Title</h3>
-              <p>This is a project</p>
-            </div>
-          </div>
-        </section>
+          {selectedSection === 'experience' && (
+            <section id="experience">
+              <h2>Experience</h2>
+              <p>This is the Experience section</p>
+            </section>
+          )}
 
 
-        <section id="Contact">
-          <h2>Contact Me</h2>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="name">Name:</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                />
-            </div>
-            <div>
-              <label htmlFor="email">Email:</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="Message">Message:</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <button type="submit">Send</button>
-          </form>
-        </section>
+          {/* Contact Form Section */}
 
-        <footer>
-          <p>@ 2024 Andrew Jung</p>
-        </footer>
+          {/*}
+          {selectedSection === 'contact' && (
+            <section id="Contact">
+              <h2>Contact Me</h2>
+              <form onSubmit={handleSubmit} className="contact-form">
+                <div>
+                  <label htmlFor="name">Name:</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    />
+                </div>
+                <div>
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="Message">Message:</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <button type="submit">Send</button>
+              </form>
+            </section>
+
+          )}
+          */}
         </div>
       )}
     </div>

@@ -18,7 +18,7 @@ const Loadingscreen = ({ onFinish }) => {
                     return prevIndex;
                 }//else
             });//setMessageIndex
-        }, 3000);//const interval
+        }, 5000);//const interval
 
         return () => clearInterval(interval);
     }, [messages.length, onFinish])//useEffect
